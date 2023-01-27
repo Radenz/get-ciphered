@@ -9,8 +9,6 @@ class AffineCipher {
     private readonly offset: number
   ) {
     this.inverseModulus = inverseMod(multiplier, 1, 26);
-
-    console.log(this.inverseModulus);
   }
 
   encrypt(source: string): string {
