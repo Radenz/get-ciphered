@@ -8,7 +8,11 @@ const config = {
     ),
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        label: ["Inter", "system-ui", "serif"],
+      },
+    },
   },
   plugins: [
     require("@tailwindcss/forms"),

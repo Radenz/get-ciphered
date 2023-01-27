@@ -1,10 +1,16 @@
 <script lang="ts">
-  import { AppBar, RangeSlider, Avatar } from "@skeletonlabs/skeleton";
+  import { AppRail, AppRailTile } from "@skeletonlabs/skeleton";
+  import { writable } from "svelte/store";
   import { AffineCipher } from "./lib/cipher/affine";
   import { HillCipher } from "./lib/cipher/hill";
   import { PlayfairCipher } from "./lib/cipher/playfair";
   import { ModulusMatrix } from "./lib/cipher/utils/math";
   import { VigenereCipher } from "./lib/cipher/vigenere";
+  import AffineLabel from "./lib/components/labels/AffineLabel.svelte";
+  import HillLabel from "./lib/components/labels/HillLabel.svelte";
+  import PlayfairLabel from "./lib/components/labels/PlayfairLabel.svelte";
+  import VigenereLabel from "./lib/components/labels/VigenereLabel.svelte";
+  import VigenerePage from "./VigenerePage.svelte";
 
   let source: string;
   let encrypted: string;
@@ -73,6 +79,8 @@
   }
 
   a();
+
+  const storeValue = writable("vigenere");
 </script>
 
 <!-- <main> -->
@@ -99,7 +107,7 @@
   </div> -->
 
 <!-- </main> -->
-<h2>Hello World</h2>
+<!-- <h2>Hello World</h2>
 <label class="input-label">
   <span>Flavors</span>
   <select name="flavors" id="flavors" bind:value={flavorValue}>
@@ -107,7 +115,27 @@
     <option value="vanilla">Vanilla</option>
     <option value="strawberry">Strawberry</option>
   </select>
-</label>
+</label> -->
+
+<div class="overflow-hidden grid grid-cols-[auto_1fr]">
+  <AppRail class="h-full" selected={storeValue}>
+    <svelte:fragment slot="lead">(lead)</svelte:fragment>
+    <!-- (AppRailTiles Here) -->
+    <AppRailTile value="vigenere"><VigenereLabel /></AppRailTile>
+    <AppRailTile value="playfair"><PlayfairLabel /></AppRailTile>
+    <AppRailTile value="hill"><HillLabel /></AppRailTile>
+    <AppRailTile value="affine"><AffineLabel /></AppRailTile>
+    <svelte:fragment slot="trail">(trail)</svelte:fragment>
+  </AppRail>
+
+  <div class="w-full h-screen p-12">
+    <div class="card w-full h-full box-border shadow-md p-4">
+      {#if $storeValue == "vigenere"}
+        <VigenerePage />
+      {/if}
+    </div>
+  </div>
+</div>
 
 <style>
 </style>
