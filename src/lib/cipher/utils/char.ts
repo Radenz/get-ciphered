@@ -35,10 +35,16 @@ function isAlpha(char: number): boolean {
   return (char >= A && char <= Z) || (char >= a && char <= z);
 }
 
+function chunked(text: string, length: number): string[] {
+  const regex = new RegExp(`.{1,${length}}`, "g");
+  return text.match(regex);
+}
+
 export {
   alphaCodeOf,
   alphaUpperCaseOf,
   alphaLowerCaseOf,
   isAlpha,
   toUpperCase,
+  chunked,
 };

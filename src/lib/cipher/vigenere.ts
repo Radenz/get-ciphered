@@ -58,7 +58,6 @@ class VigenereCipher {
     for (let i = 0; i < source.length; i++) {
       const char = source.charCodeAt(i);
       if (ignoreNonLetters && !isAlpha(char)) {
-        encrypted.push(char);
         continue;
       }
 
@@ -91,7 +90,6 @@ class VigenereCipher {
     for (let i = 0; i < encrypted.length; i++) {
       const char = encrypted.charCodeAt(i);
       if (ignoreNonLetters && !isAlpha(char)) {
-        source.push(char);
         continue;
       }
 
