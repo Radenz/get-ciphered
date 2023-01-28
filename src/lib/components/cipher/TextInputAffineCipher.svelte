@@ -5,8 +5,8 @@
 
   let source: string;
   let result: string = "";
-  let multiplier: number = 0;;
-  let offset:number = 0;
+  let multiplier: number = 0;
+  let offset: number = 0;
   let cipher: AffineCipher;
 
   function encrypt() {
@@ -32,21 +32,23 @@
   }
 </script>
 
-<div class="grow grid grid-rows-[1fr_auto] gap-4 h-full">
-  <div class="grid grid-cols-[1fr_1fr] gap-6">
+<div class="grow grid grid-rows-[1fr_auto] gap-4 h-full overflow-hidden">
+  <div class="grid grid-cols-[1fr_1fr] gap-6 overflow-hidden">
     <div class="h-full">
       <label class="input-label box-border grid grid-rows-[auto_1fr] h-full">
         <h4>Input</h4>
         <textarea bind:value={source} class="resize-none" />
       </label>
     </div>
-    <div class="input-label h-full box-border grid grid-rows-[auto_1fr]">
+    <div
+      class="input-label h-full box-border grid grid-rows-[auto_1fr] overflow-hidden"
+    >
       <h4>Result</h4>
       <div
-        class="bg-surface-700 rounded-md border-surface-500 border box-border p-2 text-output"
+        class="bg-surface-700 rounded-md border-surface-500 border box-border p-2 text-output overflow-y-scroll"
       >
         <p class="break-all">
-        {result}
+          {result}
         </p>
       </div>
     </div>
@@ -55,7 +57,7 @@
     <div class="flex items-center justify-between gap-6">
       <label class="input-label box-border flex items-center gap-4 grow">
         <h4 class="">Multiplier</h4>
-        <input type="text" bind:value={multiplier} class="h-8 text-input" />  
+        <input type="text" bind:value={multiplier} class="h-8 text-input" />
       </label>
       <label class="input-label box-border flex items-center gap-4 grow">
         <h4 class="mt-0">Offset</h4>

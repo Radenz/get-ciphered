@@ -11,14 +11,23 @@
   let position2: number = 0;
   let position3: number = 0;
   let reflector: string;
-  let plugboard:string = "";
+  let plugboard: string = "";
   let result: string = "";
   let resultContainer: HTMLDivElement;
   let cipher: EnigmaCipher;
 
   function encrypt() {
     // cipher = new EnigmaCipher("EKMFLGDQVZNTOWYHXUSPAIBRCJ", "AJDKSIRUXBLHWTMCQGZNPYFVOE", "BDFHJLCPRTXVZNYEIWGAKMUSQO", 0, 0,0, "AB","YRUHQSLDPXNGOKMIEBFZCWVJAT");
-    cipher = new EnigmaCipher(rotor1, rotor2, rotor3,position1,position2,position3, plugboard ,reflector);
+    cipher = new EnigmaCipher(
+      rotor1,
+      rotor2,
+      rotor3,
+      position1,
+      position2,
+      position3,
+      plugboard,
+      reflector
+    );
 
     result = cipher.encrypt(source);
     compact();
@@ -26,8 +35,17 @@
 
   function decrypt() {
     // cipher = new EnigmaCipher("EKMFLGDQVZNTOWYHXUSPAIBRCJ", "AJDKSIRUXBLHWTMCQGZNPYFVOE", "BDFHJLCPRTXVZNYEIWGAKMUSQO", 0, 0,0, "AB","YRUHQSLDPXNGOKMIEBFZCWVJAT");
-    cipher = new EnigmaCipher(rotor1, rotor2, rotor3,position1,position2,position3, plugboard ,reflector);
-    
+    cipher = new EnigmaCipher(
+      rotor1,
+      rotor2,
+      rotor3,
+      position1,
+      position2,
+      position3,
+      plugboard,
+      reflector
+    );
+
     result = cipher.decrypt(source);
     compact();
   }
@@ -42,8 +60,8 @@
   }
 </script>
 
-<div class="grow grid grid-rows-[1fr_auto] gap-4 h-full">
-  <div class="grid grid-cols-[1fr_1fr_1fr] gap-6">
+<div class="grow grid grid-rows-[1fr_auto] gap-4 h-full overflow-hidden">
+  <div class="grid grid-cols-[1fr_1fr_1fr] gap-6 overflow-hidden">
     <div class="h-full">
       <label class="input-label box-border grid grid-rows-[auto_1fr] h-full">
         <h4>Input</h4>
@@ -51,13 +69,13 @@
       </label>
     </div>
     <div class="h-full">
-     <h4>Key</h4>
+      <h4>Key</h4>
       <label class="input-label box-border flex items-center gap-4 grow mt-5">
-        <h5 class =mr-2>Rotor1</h5>
+        <h5 class="mr-2">Rotor1</h5>
         <input type="text" bind:value={rotor1} class="h-8 text-input" />
       </label>
       <label class="input-label box-border flex items-center gap-4 grow mt-5">
-        <h5 class ="mr-2">Rotor2</h5>
+        <h5 class="mr-2">Rotor2</h5>
         <input type="text" bind:value={rotor2} class="h-8 text-input" />
       </label>
       <label class="input-label box-border flex items-center gap-4 grow mt-5">
@@ -65,11 +83,11 @@
         <input type="text" bind:value={rotor3} class="h-8 text-input " />
       </label>
       <label class="input-label box-border flex items-center gap-4 grow mt-5">
-        <h5 class =mr-2>Position1</h5>
+        <h5 class="mr-2">Position1</h5>
         <input type="text" bind:value={position1} class="h-8 text-input" />
       </label>
       <label class="input-label box-border flex items-center gap-4 grow mt-5">
-        <h5 class ="mr-2">Position2</h5>
+        <h5 class="mr-2">Position2</h5>
         <input type="text" bind:value={position2} class="h-8 text-input" />
       </label>
       <label class="input-label box-border flex items-center gap-4 grow mt-5">
@@ -85,14 +103,16 @@
         <input type="text" bind:value={plugboard} class="h-8 text-input " />
       </label>
     </div>
-    <div class="input-label h-full box-border grid grid-rows-[auto_1fr]">
+    <div
+      class="input-label h-full box-border grid grid-rows-[auto_1fr] overflow-hidden"
+    >
       <h4>Result</h4>
       <div
         bind:this={resultContainer}
-        class="bg-surface-700 rounded-md border-surface-500 border box-border p-2"
+        class="bg-surface-700 rounded-md border-surface-500 border box-border p-2 overflow-y-scroll"
       >
         <p class="break-all">
-        {result}
+          {result}
         </p>
       </div>
     </div>
@@ -136,15 +156,15 @@
       </div>
     </div>
     <div>
-        <button
-          class="btn btn-sm variant-filled-primary font-label font-semibold"
-          on:click={() => {
-            saveText(result, "encrypted.txt");
-          }}
-        >
-          Download
-        </button>
-      </div>
+      <button
+        class="btn btn-sm variant-filled-primary font-label font-semibold"
+        on:click={() => {
+          saveText(result, "encrypted.txt");
+        }}
+      >
+        Download
+      </button>
+    </div>
   </div>
 </div>
 

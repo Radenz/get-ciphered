@@ -93,8 +93,8 @@
   $: fileLabel = fileName ? `File: ${fileName}` : "No file chosen";
 </script>
 
-<div class="grow grid grid-rows-[1fr_auto] gap-4 h-full">
-  <div class="grid grid-cols-[1fr_1fr] gap-6">
+<div class="grow grid grid-rows-[1fr_auto] gap-4 h-full overflow-hidden">
+  <div class="grid grid-cols-[1fr_1fr] gap-6 overflow-hidden">
     <div class="grid grid-rows-[1fr_auto] gap-4">
       <FileDropzone
         bind:files
@@ -104,13 +104,15 @@
       />
       <h4>{fileLabel}</h4>
     </div>
-    <div class="input-label h-full box-border grid grid-rows-[auto_1fr_auto]">
+    <div
+      class="input-label h-full box-border grid grid-rows-[auto_1fr_auto] overflow-hidden"
+    >
       <h4>Result</h4>
       <div
-        class="bg-surface-700 rounded-md border-surface-500 border box-border p-2"
+        class="bg-surface-700 rounded-md border-surface-500 border box-border p-2 overflow-y-scroll"
       >
-      <p class="break-all">
-        {result}
+        <p class="break-all">
+          {result}
         </p>
       </div>
       {#if alertMessage}
