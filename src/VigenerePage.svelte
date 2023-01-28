@@ -26,8 +26,14 @@
   </TabGroup>
 
   {#if $variant.startsWith("text-")}
-    <TextInputVigenereCipher {cipher} />
+    <TextInputVigenereCipher
+      {cipher}
+      forBinary={$variant.endsWith("extended")}
+    />
   {:else}
-    <FileInputVigenereCipher {cipher} />
+    <FileInputVigenereCipher
+      {cipher}
+      forBinary={$variant.endsWith("extended")}
+    />
   {/if}
 </div>

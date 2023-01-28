@@ -5,6 +5,10 @@
   import { Action, saveBinary } from "../../utils/save";
 
   export let cipher: VigenereCipher;
+  export let forBinary: boolean = false;
+
+  let alertMessage: string = "";
+  let alertType = "warning";
 
   let source: Uint8Array;
   let result: Uint8Array = new Uint8Array([]);
@@ -16,17 +20,25 @@
   let action: Action;
 
   function encrypt() {
+    if (!ensureKey()) return;
+    if (!forBinary && /[^A-Za-z\s]/.test(String.fromCharCode(...source)))
+      warn("Any non-letter characters is ignored.");
     action = Action.ENCRYPT;
     cipher.setKey(key);
     result = cipher.encryptBytes(source);
     resultString = String.fromCharCode(...result);
+    checkBinaryChar();
   }
 
   function decrypt() {
+    if (!ensureKey()) return;
+    if (!forBinary && /[^A-Za-z\s]/.test(String.fromCharCode(...source)))
+      warn("Any non-letter characters is ignored.");
     action = Action.DECRYPT;
     cipher.setKey(key);
     result = cipher.decryptBytes(source);
     resultString = String.fromCharCode(...result);
+    checkBinaryChar();
   }
 
   function compact() {
@@ -56,6 +68,43 @@
     saveBinary(result, name, fileType);
   }
 
+  function ensureKey() {
+    clear();
+    if (!key) {
+      error("Key cannot be empty!");
+      return false;
+    }
+
+    if (!forBinary && /[^A-Za-z]/.test(key)) {
+      error("Key can only contain alphabet letters!");
+      return false;
+    }
+
+    return true;
+  }
+
+  function checkBinaryChar() {
+    if (forBinary && /[\x00-\x08\x0E-\x1F\x7F-\xFF]/.test(resultString)) {
+      warn(
+        "The result might contain non displayable characters. Consider downloading as a file."
+      );
+    }
+  }
+
+  function warn(message: string) {
+    alertMessage = message;
+    alertType = "warning";
+  }
+
+  function error(message: string) {
+    alertMessage = message;
+    alertType = "error";
+  }
+
+  function clear() {
+    alertMessage = "";
+  }
+
   $: fileLabel = fileName ? `File: ${fileName}` : "No file chosen";
 </script>
 
@@ -70,13 +119,22 @@
       />
       <h4>{fileLabel}</h4>
     </div>
-    <div class="input-label h-full box-border grid grid-rows-[auto_1fr]">
+    <div class="input-label h-full box-border grid grid-rows-[auto_1fr_auto]">
       <h4>Result</h4>
       <div
         class="bg-surface-700 rounded-md border-surface-500 border box-border p-2"
       >
         {resultString}
       </div>
+      {#if alertMessage}
+        <div>
+          {#if alertType == "warning"}
+            <div class="alert variant-ghost-warning">{@html alertMessage}</div>
+          {:else if alertType == "error"}
+            <div class="alert variant-ghost-error">{@html alertMessage}</div>
+          {/if}
+        </div>
+      {/if}
     </div>
   </div>
   <div class="grid grid-cols-[1fr_1fr] gap-6">

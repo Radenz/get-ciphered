@@ -3,6 +3,10 @@
   import { chunked } from "../../cipher/utils/char";
   import { saveText } from "../../utils/save";
 
+  let alertContainer: HTMLElement;
+  let alertMessage: string = "";
+  let alertType = "warning";
+
   let source: string;
   let result: string = "";
   let key: string;
@@ -10,6 +14,9 @@
   let cipher: PlayfairCipher;
 
   function encrypt() {
+    if (!ensureKey()) return;
+    if (/[^A-Za-z\s]/.test(source))
+      warn("Any non-letter characters is ignored.");
     if (!lastKey || key != lastKey) {
       cipher = new PlayfairCipher(key);
     }
@@ -18,6 +25,9 @@
   }
 
   function decrypt() {
+    if (!ensureKey()) return;
+    if (/[^A-Za-z\s]/.test(source))
+      warn("Any non-letter characters is ignored.");
     if (!lastKey || key != lastKey) {
       cipher = new PlayfairCipher(key);
     }
@@ -34,6 +44,30 @@
     const chunks = chunked(result, 5);
     result = chunks.join(" ");
   }
+
+  function ensureKey() {
+    clear();
+    if (!key) {
+      error("Key phrase cannot be empty!");
+      return false;
+    }
+
+    return true;
+  }
+
+  function warn(message: string) {
+    alertMessage = message;
+    alertType = "warning";
+  }
+
+  function error(message: string) {
+    alertMessage = message;
+    alertType = "error";
+  }
+
+  function clear() {
+    alertMessage = "";
+  }
 </script>
 
 <div class="grow grid grid-rows-[1fr_auto] gap-4 h-full">
@@ -44,13 +78,22 @@
         <textarea bind:value={source} class="resize-none" />
       </label>
     </div>
-    <div class="input-label h-full box-border grid grid-rows-[auto_1fr]">
+    <div class="input-label h-full box-border grid grid-rows-[auto_1fr_auto]">
       <h4>Result</h4>
       <div
         class="bg-surface-700 rounded-md border-surface-500 border box-border p-2"
       >
         {result}
       </div>
+      {#if alertMessage}
+        <div bind:this={alertContainer}>
+          {#if alertType == "warning"}
+            <div class="alert variant-ghost-warning">{@html alertMessage}</div>
+          {:else if alertType == "error"}
+            <div class="alert variant-ghost-error">{@html alertMessage}</div>
+          {/if}
+        </div>
+      {/if}
     </div>
   </div>
   <div class="grid grid-cols-[1fr_1fr] gap-6">
