@@ -13,8 +13,6 @@
   let reflector: string;
   let plugboard:string = "";
   let result: string = "";
-  let key: string;
-  let lastKey: string;
   let resultContainer: HTMLDivElement;
   let cipher: EnigmaCipher;
 
@@ -93,7 +91,9 @@
         bind:this={resultContainer}
         class="bg-surface-700 rounded-md border-surface-500 border box-border p-2"
       >
+        <p class="break-all">
         {result}
+        </p>
       </div>
     </div>
   </div>

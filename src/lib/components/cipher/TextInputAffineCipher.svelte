@@ -7,7 +7,6 @@
   let result: string = "";
   let multiplier: number = 0;;
   let offset:number = 0;
-  let lastKey: string;
   let cipher: AffineCipher;
 
   function encrypt() {
@@ -44,9 +43,11 @@
     <div class="input-label h-full box-border grid grid-rows-[auto_1fr]">
       <h4>Result</h4>
       <div
-        class="bg-surface-700 rounded-md border-surface-500 border box-border p-2"
+        class="bg-surface-700 rounded-md border-surface-500 border box-border p-2 text-output"
       >
+        <p class="break-all">
         {result}
+        </p>
       </div>
     </div>
   </div>

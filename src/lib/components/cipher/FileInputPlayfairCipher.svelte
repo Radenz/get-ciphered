@@ -109,7 +109,9 @@
       <div
         class="bg-surface-700 rounded-md border-surface-500 border box-border p-2"
       >
+      <p class="break-all">
         {result}
+        </p>
       </div>
       {#if alertMessage}
         <div>

@@ -27,8 +27,8 @@
   function encrypt() {
     createMatrixKey();
     console.log(keymatrix);
-    // cipher = new HillCipher(keymatrix);
-    // result = cipher.encrypt(source);
+    cipher = new HillCipher(keymatrix);
+    result = cipher.encrypt(source);
   }
 
   function decrypt() {
@@ -61,7 +61,9 @@
       <div
         class="bg-surface-700 rounded-md border-surface-500 border box-border p-2"
       >
+        <p class="break-all">
         {result}
+        </p>
       </div>
     </div>
   </div>

@@ -83,7 +83,9 @@
       <div
         class="bg-surface-700 rounded-md border-surface-500 border box-border p-2"
       >
-        {result}
+        <p class="break-all">
+          {result}
+        </p>
       </div>
       {#if alertMessage}
         <div bind:this={alertContainer}>
