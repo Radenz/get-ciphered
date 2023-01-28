@@ -1,50 +1,45 @@
 <script lang="ts">
   import { FileDropzone } from "@skeletonlabs/skeleton";
-  import { PlayfairCipher } from "../../cipher/playfair";
   import { chunked } from "../../cipher/utils/char";
+  import type { VigenereCipher } from "../../cipher/vigenere";
   import { Action, saveText } from "../../utils/save";
 
-  let source: string = "";
-  let result: string = "";
+  export let cipher: VigenereCipher;
+
+  let source: Uint8Array;
+  let result: Uint8Array = new Uint8Array([]);
+  let resultString: string = "";
   let key: string;
-  let lastKey: string;
-  let cipher: PlayfairCipher;
   let files: FileList;
   let fileName: string;
   let action: Action;
 
   function encrypt() {
-    action = Action.ENCRYPT;
-    if (!lastKey || key != lastKey) {
-      cipher = new PlayfairCipher(key);
-    }
-    result = cipher.encrypt(source);
-    compact();
+    cipher.setKey(key);
+    result = cipher.encryptBytes(source);
+    resultString = String.fromCharCode(...result);
   }
 
   function decrypt() {
-    action = Action.DECRYPT;
-    if (!lastKey || key != lastKey) {
-      cipher = new PlayfairCipher(key);
-    }
-    result = cipher.decrypt(source);
-    compact();
+    cipher.setKey(key);
+    result = cipher.encryptBytes(source);
+    resultString = String.fromCharCode(...result);
   }
 
   function compact() {
-    result = result.replaceAll(" ", "");
+    resultString = resultString.replaceAll(" ", "");
   }
 
   function chunk() {
-    if (result.includes(" ")) return;
-    const chunks = chunked(result, 5);
-    result = chunks.join(" ");
+    if (resultString.includes(" ")) return;
+    const chunks = chunked(resultString, 5);
+    resultString = chunks.join(" ");
   }
 
   async function onChange() {
     const file = files[0];
     fileName = file.name;
-    source = await file.text();
+    source = new Uint8Array(await file.arrayBuffer());
   }
 
   function save() {
@@ -54,7 +49,7 @@
         : fileName.startsWith("encrypted-")
         ? fileName.replace("encrypted-", "")
         : `decrypted-${fileName}`;
-    saveText(result, name);
+    // saveText(result, name);
   }
 
   $: fileLabel = fileName ? `File: ${fileName}` : "No file chosen";
@@ -76,14 +71,14 @@
       <div
         class="bg-surface-700 rounded-md border-surface-500 border box-border p-2"
       >
-        {result}
+        {resultString}
       </div>
     </div>
   </div>
   <div class="grid grid-cols-[1fr_1fr] gap-6">
     <div class="flex items-center justify-between gap-6">
       <label class="input-label box-border flex items-center gap-4 grow">
-        <h4>Keyphrase</h4>
+        <h4>Key</h4>
         <input type="text" bind:value={key} class="h-8 text-input" />
       </label>
       <div class="flex gap-4">

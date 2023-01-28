@@ -7,7 +7,6 @@
   let result: string = "";
   let key: string;
   let lastKey: string;
-  let resultContainer: HTMLDivElement;
   let cipher: PlayfairCipher;
 
   function encrypt() {
@@ -31,6 +30,7 @@
   }
 
   function chunk() {
+    if (result.includes(" ")) return;
     const chunks = chunked(result, 5);
     result = chunks.join(" ");
   }
@@ -47,7 +47,6 @@
     <div class="input-label h-full box-border grid grid-rows-[auto_1fr]">
       <h4>Result</h4>
       <div
-        bind:this={resultContainer}
         class="bg-surface-700 rounded-md border-surface-500 border box-border p-2"
       >
         {result}

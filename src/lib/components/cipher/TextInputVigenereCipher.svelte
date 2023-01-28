@@ -12,13 +12,11 @@
   function encrypt() {
     cipher.setKey(key);
     result = cipher.encryptString(source);
-    compact();
   }
 
   function decrypt() {
     cipher.setKey(key);
     result = cipher.decryptString(source);
-    compact();
   }
 
   function compact() {
@@ -26,6 +24,7 @@
   }
 
   function chunk() {
+    if (result.includes(" ")) return;
     const chunks = chunked(result, 5);
     result = chunks.join(" ");
   }
