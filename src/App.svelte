@@ -7,15 +7,17 @@
   import HillLabel from "./lib/components/labels/HillLabel.svelte";
   import PlayfairLabel from "./lib/components/labels/PlayfairLabel.svelte";
   import VigenereLabel from "./lib/components/labels/VigenereLabel.svelte";
+  import EnigmaLabel from "./lib/components/labels/EnigmaLabel.svelte"
   import PlayfairPage from "./PlayfairPage.svelte";
   import VigenerePage from "./VigenerePage.svelte";
-
+  import EnigmaPage from "./EnigmaPage.svelte";
   const cipher = writable("vigenere");
   const pages = {
     vigenere: VigenerePage,
     playfair: PlayfairPage,
     hill: HillPage,
     affine: AffinePage,
+    enigma: EnigmaPage
   };
 </script>
 
@@ -26,6 +28,7 @@
     <AppRailTile value="playfair"><PlayfairLabel /></AppRailTile>
     <AppRailTile value="hill"><HillLabel /></AppRailTile>
     <AppRailTile value="affine"><AffineLabel /></AppRailTile>
+    <AppRailTile value="enigma"><EnigmaLabel /></AppRailTile>
     <svelte:fragment slot="trail">(trail)</svelte:fragment>
   </AppRail>
 
