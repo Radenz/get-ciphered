@@ -2,7 +2,7 @@
   import { FileDropzone } from "@skeletonlabs/skeleton";
   import { chunked } from "../../cipher/utils/char";
   import type { VigenereCipher } from "../../cipher/vigenere";
-  import { Action, saveText } from "../../utils/save";
+  import { Action, saveBinary } from "../../utils/save";
 
   export let cipher: VigenereCipher;
 
@@ -12,17 +12,20 @@
   let key: string;
   let files: FileList;
   let fileName: string;
+  let fileType: string;
   let action: Action;
 
   function encrypt() {
+    action = Action.ENCRYPT;
     cipher.setKey(key);
     result = cipher.encryptBytes(source);
     resultString = String.fromCharCode(...result);
   }
 
   function decrypt() {
+    action = Action.DECRYPT;
     cipher.setKey(key);
-    result = cipher.encryptBytes(source);
+    result = cipher.decryptBytes(source);
     resultString = String.fromCharCode(...result);
   }
 
@@ -39,6 +42,7 @@
   async function onChange() {
     const file = files[0];
     fileName = file.name;
+    fileType = file.type;
     source = new Uint8Array(await file.arrayBuffer());
   }
 
@@ -49,7 +53,7 @@
         : fileName.startsWith("encrypted-")
         ? fileName.replace("encrypted-", "")
         : `decrypted-${fileName}`;
-    // saveText(result, name);
+    saveBinary(result, name, fileType);
   }
 
   $: fileLabel = fileName ? `File: ${fileName}` : "No file chosen";
