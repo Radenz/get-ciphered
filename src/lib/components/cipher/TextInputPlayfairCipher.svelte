@@ -1,6 +1,7 @@
 <script lang="ts">
   import { PlayfairCipher } from "../../cipher/playfair";
   import { chunked } from "../../cipher/utils/char";
+  import { saveText } from "../../utils/save";
 
   let source: string;
   let result: string = "";
@@ -93,7 +94,9 @@
       <div>
         <button
           class="btn btn-sm variant-filled-primary font-label font-semibold"
-          on:click={decrypt}
+          on:click={() => {
+            saveText(result, "encrypted.txt");
+          }}
         >
           Download
         </button>

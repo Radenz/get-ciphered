@@ -1,13 +1,13 @@
 <script lang="ts">
   import { chunked } from "../../cipher/utils/char";
   import type { VigenereCipher } from "../../cipher/vigenere";
+  import { saveText } from "../../utils/save";
 
   export let cipher: VigenereCipher;
 
   let source: string;
   let result: string = "";
   let key: string;
-  let resultContainer: HTMLDivElement;
 
   function encrypt() {
     cipher.setKey(key);
@@ -42,7 +42,6 @@
     <div class="input-label h-full box-border grid grid-rows-[auto_1fr]">
       <h4>Result</h4>
       <div
-        bind:this={resultContainer}
         class="bg-surface-700 rounded-md border-surface-500 border box-border p-2"
       >
         {result}
@@ -89,7 +88,9 @@
       <div>
         <button
           class="btn btn-sm variant-filled-primary font-label font-semibold"
-          on:click={decrypt}
+          on:click={() => {
+            saveText(result, "encrypted.txt");
+          }}
         >
           Download
         </button>
