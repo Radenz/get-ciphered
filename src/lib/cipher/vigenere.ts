@@ -1,4 +1,9 @@
-import { alphaCodeOf, alphaUpperCaseOf, isAlpha } from "./utils/char";
+import {
+  alphaCodeOf,
+  alphaUpperCaseOf,
+  isAlpha,
+  NON_ALPHA,
+} from "./utils/char";
 import { mod } from "./utils/math";
 
 interface VigenereEncoder {
@@ -108,21 +113,21 @@ class VigenereCipher {
     return String.fromCharCode(...source);
   }
 
-  decryptBytes(source: Uint8Array): Uint8Array {
-    const encrypted = [];
+  decryptBytes(encrypted: Uint8Array): Uint8Array {
+    const source = [];
     let index = 0;
 
-    for (let i = 0; i < source.length; i++) {
-      const char = source[i];
+    for (let i = 0; i < encrypted.length; i++) {
+      const char = encrypted[i];
       if (this.ignoreNonLetters && !isAlpha(char)) {
         continue;
       }
       const keyByte = this.key.charCodeAt(index % this.key.length);
-      encrypted.push(this.matrix.decode(char, keyByte));
+      source.push(this.matrix.decode(char, keyByte));
       index++;
     }
 
-    return new Uint8Array(encrypted);
+    return new Uint8Array(source);
   }
 }
 
@@ -132,20 +137,16 @@ class AutoKeyVigenereCipher extends VigenereCipher {
   }
 
   override encryptString(source: string): string {
+    const sanitizedSource = source.replaceAll(NON_ALPHA, "");
     const encrypted = [];
-    const keySource = source.replaceAll(/[^A-Za-z]/g, "");
     let index = 0;
 
-    for (let i = 0; i < source.length; i++) {
-      const char = source.charCodeAt(i);
-      if (!isAlpha(char)) {
-        continue;
-      }
-
+    for (let i = 0; i < sanitizedSource.length; i++) {
+      const char = sanitizedSource.charCodeAt(i);
       const keyChar =
         index < this.key.length
           ? this.key.charCodeAt(index)
-          : keySource.charCodeAt(index - this.key.length);
+          : sanitizedSource.charCodeAt(index - this.key.length);
       encrypted.push(this.matrix.encode(char, keyChar));
       index++;
     }
@@ -154,11 +155,12 @@ class AutoKeyVigenereCipher extends VigenereCipher {
   }
 
   override decryptString(encrypted: string): string {
+    const sanitizedEncrypted = encrypted.replaceAll(NON_ALPHA, "");
     const source = [];
     let index = 0;
 
-    for (let i = 0; i < encrypted.length; i++) {
-      const char = encrypted.charCodeAt(i);
+    for (let i = 0; i < sanitizedEncrypted.length; i++) {
+      const char = sanitizedEncrypted.charCodeAt(i);
       if (!isAlpha(char)) {
         continue;
       }
@@ -173,6 +175,48 @@ class AutoKeyVigenereCipher extends VigenereCipher {
     }
 
     return String.fromCharCode(...source);
+  }
+
+  override encryptBytes(source: Uint8Array): Uint8Array {
+    const sanitizedSource = source.filter(isAlpha);
+    const encrypted = [];
+    let index = 0;
+
+    for (let i = 0; i < sanitizedSource.length; i++) {
+      const char = sanitizedSource[i];
+      if (this.ignoreNonLetters && !isAlpha(char)) {
+        continue;
+      }
+      const keyByte =
+        index < this.key.length
+          ? this.key.charCodeAt(index % this.key.length)
+          : sanitizedSource[index - this.key.length];
+      encrypted.push(this.matrix.encode(char, keyByte));
+      index++;
+    }
+
+    return new Uint8Array(encrypted);
+  }
+
+  override decryptBytes(encrypted: Uint8Array): Uint8Array {
+    const sanitizedEncrypted = encrypted.filter(isAlpha);
+    const source = [];
+    let index = 0;
+
+    for (let i = 0; i < sanitizedEncrypted.length; i++) {
+      const char = sanitizedEncrypted[i];
+      if (this.ignoreNonLetters && !isAlpha(char)) {
+        continue;
+      }
+      const keyByte =
+        index < this.key.length
+          ? this.key.charCodeAt(index % this.key.length)
+          : source[index - this.key.length];
+      source.push(this.matrix.decode(char, keyByte));
+      index++;
+    }
+
+    return new Uint8Array(source);
   }
 }
 
