@@ -13,6 +13,7 @@
   let key: string;
 
   function encrypt() {
+    if (!ensureInput()) return;
     if (!ensureKey()) return;
     if (!forBinary && /[^A-Za-z\s]/.test(source))
       warn("Any non-letter characters is ignored.");
@@ -22,6 +23,7 @@
   }
 
   function decrypt() {
+    if (!ensureInput()) return;
     if (!ensureKey()) return;
     if (!forBinary && /[^A-Za-z\s]/.test(source))
       warn("Any non-letter characters is ignored.");
@@ -36,6 +38,16 @@
         "The result might contain non displayable characters. Consider downloading as a file."
       );
     }
+  }
+
+  function ensureInput() {
+    clear();
+    if (!source) {
+      error("Input is empty!");
+      return false;
+    }
+
+    return true;
   }
 
   function ensureKey() {
