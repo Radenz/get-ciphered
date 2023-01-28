@@ -9,21 +9,28 @@ class AffineCipher {
 		private readonly offset: number
 	) {
 		this.inverseModulus = inverseMod(multiplier, 1, 26);
-    this.inverseModulusBytes = inverseMod(multiplier, 1, 256);
 	}
 
 	encryptBytes(source: Uint8Array): Uint8Array {
 		const encrypted = [];
 		for (let i = 0; i < source.length; i++) {
+			
 			const char = source[i];
+			if (char<65 || char>90) {
+				encrypted.push(char);
+				continue;
+			}
+
 			const newAlphaCode = mod(
-				char * this.multiplier + this.offset,
-				256
+				alphaCodeOf(char) * this.multiplier + Number(this.offset),
+				26
 			);
-			encrypted.push(newAlphaCode);
+			encrypted.push(alphaUpperCaseOf(newAlphaCode));
 		}
+		
 
 		return new Uint8Array(encrypted);
+		// return source;
 	}
 
 	encrypt(source: string): string {
@@ -32,7 +39,7 @@ class AffineCipher {
 		for (let i = 0; i < source.length; i++) {
 			const char = source.charCodeAt(i);
 			const newAlphaCode = mod(
-				alphaCodeOf(char) * this.multiplier + this.offset,
+				alphaCodeOf(char) * this.multiplier + Number(this.offset),
 				26
 			);
 			encrypted.push(alphaUpperCaseOf(newAlphaCode));
@@ -59,11 +66,16 @@ class AffineCipher {
 		const decrypted = [];
 		for (let i = 0; i < source.length; i++) {
 			const char = source[i];
+			if (char < 65 || char > 90) {
+				decrypted.push(char);
+				continue;
+			}
+			console.log(alphaCodeOf(char));
 			const newAlphaCode = mod(
-				(char - this.offset) * this.inverseModulusBytes,
-				256
+				(alphaCodeOf(char) - this.offset) * this.inverseModulus,
+				26
 			);
-			decrypted.push(newAlphaCode);
+			decrypted.push(alphaUpperCaseOf(newAlphaCode));
 		}
 
 		return new Uint8Array(decrypted);
