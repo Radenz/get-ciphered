@@ -31,6 +31,7 @@
   }
 
   function chunk() {
+    if (resultString.includes(" ")) return;
     const chunks = chunked(resultString, 5);
     resultString = chunks.join(" ");
   }

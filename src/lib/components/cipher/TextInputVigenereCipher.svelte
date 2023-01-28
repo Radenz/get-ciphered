@@ -24,6 +24,7 @@
   }
 
   function chunk() {
+    if (result.includes(" ")) return;
     const chunks = chunked(result, 5);
     result = chunks.join(" ");
   }
