@@ -30,7 +30,11 @@ class ByteShifter implements VigenereEncoder {
 }
 
 class VigenereCipher {
-  constructor(protected matrix: VigenereEncoder, protected key: string) {}
+  constructor(
+    protected matrix: VigenereEncoder,
+    protected key: string,
+    protected ignoreNonLetters: boolean = true
+  ) {}
 
   protected static readonly STANDARD_ENCODER = new AlphaShifter();
   protected static readonly BYTE_ENCODER = new ByteShifter();
@@ -40,7 +44,7 @@ class VigenereCipher {
   }
 
   static extended(key: string): VigenereCipher {
-    return new VigenereCipher(VigenereCipher.BYTE_ENCODER, key);
+    return new VigenereCipher(VigenereCipher.BYTE_ENCODER, key, false);
   }
 
   static autoKey(key: string): VigenereCipher {
@@ -51,13 +55,13 @@ class VigenereCipher {
     this.key = key;
   }
 
-  encryptString(source: string, ignoreNonLetters: boolean = true): string {
+  encryptString(source: string): string {
     const encrypted = [];
     let index = 0;
 
     for (let i = 0; i < source.length; i++) {
       const char = source.charCodeAt(i);
-      if (ignoreNonLetters && !isAlpha(char)) {
+      if (this.ignoreNonLetters && !isAlpha(char)) {
         continue;
       }
 
@@ -83,13 +87,13 @@ class VigenereCipher {
     return new Uint8Array(encrypted);
   }
 
-  decryptString(encrypted: string, ignoreNonLetters: boolean = true): string {
+  decryptString(encrypted: string): string {
     const source = [];
     let index = 0;
 
     for (let i = 0; i < encrypted.length; i++) {
       const char = encrypted.charCodeAt(i);
-      if (ignoreNonLetters && !isAlpha(char)) {
+      if (this.ignoreNonLetters && !isAlpha(char)) {
         continue;
       }
 
@@ -121,10 +125,7 @@ class AutoKeyVigenereCipher extends VigenereCipher {
     super(VigenereCipher.STANDARD_ENCODER, key);
   }
 
-  override encryptString(
-    source: string,
-    ignoreNonLetters: boolean = true
-  ): string {
+  override encryptString(source: string): string {
     const encrypted = [];
     const keySource = source.replaceAll(/[^A-Za-z]/g, "");
     let index = 0;
@@ -146,10 +147,7 @@ class AutoKeyVigenereCipher extends VigenereCipher {
     return String.fromCharCode(...encrypted);
   }
 
-  override decryptString(
-    encrypted: string,
-    ignoreNonLetters: boolean = true
-  ): string {
+  override decryptString(encrypted: string): string {
     const source = [];
     let index = 0;
 
