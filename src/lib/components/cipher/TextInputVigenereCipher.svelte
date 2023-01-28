@@ -1,28 +1,22 @@
 <script lang="ts">
-  import { PlayfairCipher } from "../../cipher/playfair";
   import { chunked } from "../../cipher/utils/char";
+  import type { VigenereCipher } from "../../cipher/vigenere";
   import { saveText } from "../../utils/save";
+
+  export let cipher: VigenereCipher;
 
   let source: string;
   let result: string = "";
   let key: string;
-  let lastKey: string;
-  let cipher: PlayfairCipher;
 
   function encrypt() {
-    if (!lastKey || key != lastKey) {
-      cipher = new PlayfairCipher(key);
-    }
-    result = cipher.encrypt(source);
-    compact();
+    cipher.setKey(key);
+    result = cipher.encryptString(source);
   }
 
   function decrypt() {
-    if (!lastKey || key != lastKey) {
-      cipher = new PlayfairCipher(key);
-    }
-    result = cipher.decrypt(source);
-    compact();
+    cipher.setKey(key);
+    result = cipher.decryptString(source);
   }
 
   function compact() {
@@ -55,7 +49,7 @@
   <div class="grid grid-cols-[1fr_1fr] gap-6">
     <div class="flex items-center justify-between gap-6">
       <label class="input-label box-border flex items-center gap-4 grow">
-        <h4>Keyphrase</h4>
+        <h4>Key</h4>
         <input type="text" bind:value={key} class="h-8 text-input" />
       </label>
       <div class="flex gap-4">

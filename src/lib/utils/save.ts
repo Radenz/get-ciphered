@@ -8,4 +8,9 @@ function saveText(text: string, name: string) {
   document.body.removeChild(anchor);
 }
 
-export { saveText };
+enum Action {
+  ENCRYPT,
+  DECRYPT,
+}
+
+export { saveText, Action };

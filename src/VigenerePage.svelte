@@ -2,21 +2,32 @@
   import { Tab, TabGroup } from "@skeletonlabs/skeleton";
   import { writable } from "svelte/store";
   import { VigenereCipher } from "./lib/cipher/vigenere";
-  import VigenereCipherHUD from "./lib/components/cipher/VigenereCipher.svelte";
+  import FileInputVigenereCipher from "./lib/components/cipher/FileInputVigenereCipher.svelte";
+  import TextInputVigenereCipher from "./lib/components/cipher/TextInputVigenereCipher.svelte";
 
-  let variant = writable("standard");
-  const cipher = {
+  let variant = writable("text-standard");
+  const ciphers: { [key: string]: VigenereCipher } = {
     standard: VigenereCipher.standard(""),
     extended: VigenereCipher.extended(""),
     autokey: VigenereCipher.autoKey(""),
   };
+
+  $: cipher = ciphers[$variant.replace("text-", "").replace("file-", "")];
 </script>
 
 <div class="flex flex-col gap-4 h-full">
   <TabGroup selected={variant} justify="justify-center">
-    <Tab value="standard">Standard</Tab>
-    <Tab value="extended">Extended</Tab>
-    <Tab value="autokey">Auto-Key</Tab>
+    <Tab value="text-standard">Standard - Text</Tab>
+    <Tab value="file-standard">Standard - File</Tab>
+    <Tab value="text-extended">Extended - Text</Tab>
+    <Tab value="file-extended">Extended - File</Tab>
+    <Tab value="text-autokey">Auto-Key - Text</Tab>
+    <Tab value="file-autokey">Auto-Key - File</Tab>
   </TabGroup>
-  <svelte:component this={VigenereCipherHUD} cipher={cipher[$variant]} />
+
+  {#if $variant.startsWith("text-")}
+    <TextInputVigenereCipher {cipher} />
+  {:else}
+    <FileInputVigenereCipher {cipher} />
+  {/if}
 </div>

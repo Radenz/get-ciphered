@@ -79,6 +79,9 @@ class VigenereCipher {
 
     for (let i = 0; i < source.length; i++) {
       const char = source[i];
+      if (this.ignoreNonLetters && !isAlpha(char)) {
+        continue;
+      }
       const keyByte = this.key.charCodeAt(index % this.key.length);
       encrypted.push(this.matrix.encode(char, keyByte));
       index++;
@@ -111,6 +114,9 @@ class VigenereCipher {
 
     for (let i = 0; i < source.length; i++) {
       const char = source[i];
+      if (this.ignoreNonLetters && !isAlpha(char)) {
+        continue;
+      }
       const keyByte = this.key.charCodeAt(index % this.key.length);
       encrypted.push(this.matrix.decode(char, keyByte));
       index++;
