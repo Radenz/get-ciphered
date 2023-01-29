@@ -1,10 +1,11 @@
 <script lang="ts">
   import { FileDropzone } from "@skeletonlabs/skeleton";
   import { chunked } from "../../cipher/utils/char";
-  import { AffineCipher } from "../../cipher/affine";
+  import { HillCipher } from "../../cipher/hill";
   import { Action, saveBinary } from "../../utils/save";
-
-  export let cipher: AffineCipher;
+  import { ModulusMatrix } from "../../cipher/utils/math";
+  
+  export let cipher: HillCipher;
   export let forBinary: boolean = false;
 
   let alertMessage: string = "";
@@ -13,17 +14,30 @@
   let source: Uint8Array;
   let result: Uint8Array = new Uint8Array([]);
   let resultString: string = "";
+  let key: string;
+  let keymatrix: ModulusMatrix;
   let files: FileList;
   let fileName: string;
   let fileType: string;
   let action: Action;
-  let multiplier: number;
-  let offset: number;
 
+  function createMatrixKey() {
+    const arr = key.split(" ");
+    const size = Math.sqrt(arr.length);
+    let idx = 0;
+    keymatrix = new ModulusMatrix(size, size);
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j < size; j++) {
+        keymatrix.set(i, j, Number(arr[idx]));
+        idx++;
+      }
+    }
+  }
   function encrypt() {
     if (!ensureKey()) return;
     action = Action.ENCRYPT;
-    cipher = new AffineCipher(multiplier, offset);
+    createMatrixKey();
+    cipher = new HillCipher(keymatrix);
     result = cipher.encryptBytes(source);
     resultString = String.fromCharCode(...result);
     checkBinaryChar();
@@ -31,8 +45,9 @@
 
   function decrypt() {
     if (!ensureKey()) return;
-    action = Action.DECRYPT;
-    cipher = new AffineCipher(multiplier, offset);
+    action = Action.ENCRYPT;
+    createMatrixKey();
+    cipher = new HillCipher(keymatrix);
     result = cipher.decryptBytes(source);
     resultString = String.fromCharCode(...result);
     checkBinaryChar();
@@ -67,14 +82,11 @@
 
   function ensureKey() {
     clear();
-    if (!multiplier) {
-      error("multiplier cannot be empty!");
+    if (!key) {
+      error("Key cannot be empty!");
       return false;
     }
-    if (!offset) {
-      error("offset cannot be empty!");
-      return false;
-    }
+
 
     return true;
   }
@@ -140,12 +152,8 @@
   <div class="grid grid-cols-[1fr_1fr] gap-6">
     <div class="flex items-center justify-between gap-6">
       <label class="input-label box-border flex items-center gap-4 grow">
-        <h4 class="">Multiplier</h4>
-        <input type="text" bind:value={multiplier} class="h-8 text-input" />  
-      </label>
-      <label class="input-label box-border flex items-center gap-4 grow">
-        <h4 class="mt-0">Offset</h4>
-        <input type="text" bind:value={offset} class="h-8 text-input" />
+        <h4>Key</h4>
+        <input type="text" bind:value={key} class="h-8 text-input" />
       </label>
       <div class="flex gap-4">
         <button

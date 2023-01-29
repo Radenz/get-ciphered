@@ -1,4 +1,4 @@
-import { alphaCodeOf, alphaUpperCaseOf, isAlpha } from "./utils/char";
+import { alphaCodeOf, alphaUpperCaseOf, alphaLowerCaseOf , isAlpha } from "./utils/char";
 import { inverseMod, mod } from "./utils/math";
 
 class AffineCipher {
@@ -12,25 +12,19 @@ class AffineCipher {
 	}
 
 	encryptBytes(source: Uint8Array): Uint8Array {
+		const sanitizedSource = source.filter(isAlpha);
 		const encrypted = [];
-		for (let i = 0; i < source.length; i++) {
-			
-			const char = source[i];
-			if (char<65 || char>90) {
-				encrypted.push(char);
-				continue;
-			}
 
-			const newAlphaCode = mod(
-				alphaCodeOf(char) * this.multiplier + Number(this.offset),
-				26
-			);
-			encrypted.push(alphaUpperCaseOf(newAlphaCode));
+		for (let i = 0; i < sanitizedSource.length; i++) {
+		const char = sanitizedSource[i];
+		const newAlphaCode = mod(
+			alphaCodeOf(char) * this.multiplier + Number(this.offset),
+			26
+		);
+		encrypted.push(alphaUpperCaseOf(newAlphaCode));
 		}
-		
 
 		return new Uint8Array(encrypted);
-		// return source;
 	}
 
 	encrypt(source: string): string {
@@ -64,13 +58,9 @@ class AffineCipher {
 
 	decryptBytes(source: Uint8Array): Uint8Array {
 		const decrypted = [];
-		for (let i = 0; i < source.length; i++) {
-			const char = source[i];
-			if (char < 65 || char > 90) {
-				decrypted.push(char);
-				continue;
-			}
-			console.log(alphaCodeOf(char));
+		const sanitizedSource = source.filter(isAlpha);
+		for (let i = 0; i < sanitizedSource.length; i++) {
+			const char = sanitizedSource[i];
 			const newAlphaCode = mod(
 				(alphaCodeOf(char) - this.offset) * this.inverseModulus,
 				26
