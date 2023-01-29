@@ -26,7 +26,10 @@
     action = Action.ENCRYPT;
     cipher.setKey(key);
     result = cipher.encryptBytes(source);
-    resultString = String.fromCharCode(...result);
+    resultString =
+      result.byteLength > 1000000
+        ? "Result is too big to be displayed"
+        : String.fromCharCode(...result);
     checkBinaryChar();
   }
 
@@ -37,7 +40,10 @@
     action = Action.DECRYPT;
     cipher.setKey(key);
     result = cipher.decryptBytes(source);
-    resultString = String.fromCharCode(...result);
+    resultString =
+      result.byteLength > 1000000
+        ? "Result is too big to be displayed"
+        : String.fromCharCode(...result);
     checkBinaryChar();
   }
 
