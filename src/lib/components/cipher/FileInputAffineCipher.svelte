@@ -21,6 +21,7 @@
   let offset: number;
 
   function encrypt() {
+    if (!ensureInput()) return;
     if (!ensureKey()) return;
     action = Action.ENCRYPT;
     cipher = new AffineCipher(multiplier, offset);
@@ -30,6 +31,7 @@
   }
 
   function decrypt() {
+    if (!ensureInput()) return;
     if (!ensureKey()) return;
     action = Action.DECRYPT;
     cipher = new AffineCipher(multiplier, offset);
@@ -75,8 +77,21 @@
       error("offset cannot be empty!");
       return false;
     }
+    if ( /[^0-9]/.test(offset.toString()) || /[^0-9]/.test(multiplier.toString())) {
+        error("Multiplier or Offset can only contain number!");
+        return false;
+    }
 
     return true;
+  }
+
+  function ensureInput(){
+    clear();
+    if (!source){
+      error("Input is empty!");
+      return false;
+    }
+    return true
   }
 
   function checkBinaryChar() {
