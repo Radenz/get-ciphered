@@ -1,14 +1,14 @@
 <script lang="ts">
   import { Tab, TabGroup } from "@skeletonlabs/skeleton";
   import { writable } from "svelte/store";
-//   import FileInputEnigmaCipher from "./lib/components/cipher/FileInputPlayfairCipher.svelte";
+  import FileInputEnigmaCipher from "./lib/components/cipher/FileInputEnigmaCipher.svelte";
   import TextInputEnigmaCipher from "./lib/components/cipher/TextInputEnigmaCipher.svelte";
   // import {  } from "./lib/cipher/playfair";
 
   let input = writable("text");
   const component = {
-    text: TextInputEnigmaCipher
-    // file: FileInputPlayfairCipher,
+    text: TextInputEnigmaCipher,
+    file: FileInputEnigmaCipher,
   };
 </script>
 

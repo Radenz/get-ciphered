@@ -1,4 +1,9 @@
-import { alphaUpperCaseOf } from "./utils/char";
+import {
+	alphaCodeOf,
+	alphaUpperCaseOf,
+	isAlpha,
+	NON_ALPHA,
+} from "./utils/char";
 import { ModulusMatrix } from "./utils/math";
 
 type Rotor = [string, string, string];
@@ -38,32 +43,33 @@ class EnigmaCipher {
 		const encrypted = [];
 		for (let i = 0; i < source.length; i++) {
 			var code = source.charCodeAt(i);
-			code = this.plugboard.charCodeAt((code - 65) % 26);
+			if (!isAlpha(code)) {
+				continue;
+			}
+			code = this.plugboard.charCodeAt(alphaCodeOf(code) % 26);
+
 			// left to right rotor encrpt
 			for (let j = 0; j < 3; j++) {
-				code = this.rotor[j].charCodeAt((code - 65 + this.position[j]) % 26);
+				code = this.rotor[j].charCodeAt((alphaCodeOf(code) + this.position[j]) % 26);
 			}
 
 			// reflector
-			code = this.reflector.charCodeAt(code - 65);
+			code = this.reflector.charCodeAt(alphaCodeOf(code));
 
 			//right to left rotor
 			for (let j = 2; j >= 0; j--) {
 				if (j != 2) {
-					code = (code % 26) + 65;
+					code = alphaUpperCaseOf(code % 26);
 				}
 
-				code =
-					(this.rotor[j].indexOf(String.fromCharCode(code)) -
-						this.position[j] +
-						26) %
-					26;
+				code = (this.rotor[j].indexOf(String.fromCharCode(code)) -
+						this.position[j] + 26) % 26;
 			}
 
 			// plugboard again
-			code = this.plugboard.charCodeAt((code));
+			code = this.plugboard.charCodeAt(code);
 			encrypted.push(code);
-			
+
 			this.spinrotor();
 		}
 		return String.fromCharCode(...encrypted);
