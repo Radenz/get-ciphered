@@ -32,6 +32,9 @@ class AffineCipher {
     
 		for (let i = 0; i < source.length; i++) {
 			const char = source.charCodeAt(i);
+			if (!isAlpha(char)){
+				continue;
+			}
 			const newAlphaCode = mod(
 				alphaCodeOf(char) * this.multiplier + Number(this.offset),
 				26
@@ -46,6 +49,9 @@ class AffineCipher {
 		const source = [];
 		for (let i = 0; i < encrypted.length; i++) {
 			const char = encrypted.charCodeAt(i);
+			if (!isAlpha(char)) {
+				continue;
+			}
 			const newAlphaCode = mod(
 				(alphaCodeOf(char) - this.offset) * this.inverseModulus,
 				26
