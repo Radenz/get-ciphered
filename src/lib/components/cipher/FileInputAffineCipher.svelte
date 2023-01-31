@@ -3,6 +3,7 @@
   import { chunked } from "../../cipher/utils/char";
   import { AffineCipher } from "../../cipher/affine";
   import { Action, saveBinary } from "../../utils/save";
+  import { gcd } from "../../cipher/utils/math";
 
   export let cipher: AffineCipher;
   export let forBinary: boolean = false;
@@ -82,6 +83,11 @@
         return false;
     }
 
+    if (gcd(26, multiplier) != 1){
+      error("Can't use this multiplier number!");
+      return false;
+    }
+
     return true;
   }
 
@@ -102,6 +108,7 @@
     }
   }
 
+  
   function warn(message: string) {
     alertMessage = message;
     alertType = "warning";

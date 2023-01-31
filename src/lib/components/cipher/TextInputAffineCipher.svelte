@@ -1,6 +1,7 @@
 <script lang="ts">
   import { AffineCipher } from "../../cipher/affine";
   import { chunked } from "../../cipher/utils/char";
+  import { gcd } from "../../cipher/utils/math";
   import { saveText } from "../../utils/save";
 
   let alertMessage: string = "";
@@ -51,6 +52,11 @@
 
       if ( /[^0-9]/.test(offset.toString()) || /[^0-9]/.test(multiplier.toString())) {
         error("Multiplier or Offset can only contain number!");
+        return false;
+      }
+
+      if (gcd(26, multiplier) != 1){
+        error("Can't use this multiplier number!");
         return false;
       }
 
