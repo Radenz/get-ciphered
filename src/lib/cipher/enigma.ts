@@ -50,7 +50,9 @@ class EnigmaCipher {
 
 			// left to right rotor encrpt
 			for (let j = 0; j < 3; j++) {
-				code = this.rotor[j].charCodeAt((alphaCodeOf(code) + this.position[j]) % 26);
+				code = this.rotor[j].charCodeAt(
+					(alphaCodeOf(code) + this.position[j]) % 26
+				);
 			}
 
 			// reflector
@@ -62,8 +64,11 @@ class EnigmaCipher {
 					code = alphaUpperCaseOf(code % 26);
 				}
 
-				code = (this.rotor[j].indexOf(String.fromCharCode(code)) -
-						this.position[j] + 26) % 26;
+				code =
+					(this.rotor[j].indexOf(String.fromCharCode(code)) -
+						this.position[j] +
+						26) %
+					26;
 			}
 
 			// plugboard again
@@ -75,9 +80,56 @@ class EnigmaCipher {
 		return String.fromCharCode(...encrypted);
 	}
 
+	encryptBytes(source: Uint8Array): Uint8Array {
+		const sanitizedSource = source.filter(isAlpha);
+		const encrypted = [];
+		for (let i = 0; i < sanitizedSource.length; i++) {
+			var code = sanitizedSource[i];
+			if (!isAlpha(code)) {
+				continue;
+			}
+			code = this.plugboard.charCodeAt(alphaCodeOf(code) % 26);
+
+			// left to right rotor encrpt
+			for (let j = 0; j < 3; j++) {
+				code = this.rotor[j].charCodeAt(
+					(alphaCodeOf(code) + this.position[j]) % 26
+				);
+			}
+
+			// reflector
+			code = this.reflector.charCodeAt(alphaCodeOf(code));
+
+			//right to left rotor
+			for (let j = 2; j >= 0; j--) {
+				if (j != 2) {
+					code = alphaUpperCaseOf(code % 26);
+				}
+
+				code =
+					(this.rotor[j].indexOf(String.fromCharCode(code)) -
+						this.position[j] +
+						26) %
+					26;
+			}
+
+			// plugboard again
+			code = this.plugboard.charCodeAt(code);
+			encrypted.push(code);
+
+			this.spinrotor();
+		}
+		return new Uint8Array(encrypted);
+	}
+
 	decrypt(source: string) {
 		return this.encrypt(source);
 	}
+
+	decryptBytes(source: Uint8Array):Uint8Array {
+		return this.encryptBytes(source);
+	}
+
 	/*
     Every letters, the first rotor will make one tick
     Every 26th tick of the first rotor, the second one will make one tick

@@ -1,12 +1,14 @@
 <script lang="ts">
-  import { EnigmaCipher } from "../../cipher/enigma";
+  import { FileDropzone } from "@skeletonlabs/skeleton";
   import { chunked } from "../../cipher/utils/char";
-  import { saveText } from "../../utils/save";
+  import { EnigmaCipher } from "../../cipher/enigma";
+  import { Action, saveBinary } from "../../utils/save";
+
 
   let alertMessage: string = "";
   let alertType = "warning";
 
-  let source: string;
+  let source: Uint8Array;
   let rotor1: string;
   let rotor2: string;
   let rotor3: string;
@@ -15,13 +17,20 @@
   let position3: number = 0;
   let reflector: string;
   let plugboard: string = "";
-  let result: string = "";
+  let result: Uint8Array = new Uint8Array([]);
+  let resultString: string = "";
+  let resultContainer: HTMLDivElement;
   let cipher: EnigmaCipher;
 
+  let files: FileList;
+  let fileName: string;
+  let fileType: string;
+  let action: Action;
+  
   function encrypt() {
-    if (!ensureKey()) return;
-    if (!ensureInput()) return;
-    cipher = new EnigmaCipher(
+  if (!ensureKey()) return;
+  if (!ensureInput()) return;
+   cipher = new EnigmaCipher(
       rotor1,
       rotor2,
       rotor3,
@@ -32,7 +41,8 @@
       reflector
     );
 
-    result = cipher.encrypt(source);
+    result = cipher.encryptBytes(source);
+    resultString = String.fromCharCode(...result);
     compact();
   }
 
@@ -50,17 +60,26 @@
       reflector
     );
 
-    result = cipher.decrypt(source);
+    result = cipher.decryptBytes(source);
+    resultString = String.fromCharCode(...result);
     compact();
   }
 
+  async function onChange() {
+    const file = files[0];
+    fileName = file.name;
+    fileType = file.type;
+    source = new Uint8Array(await file.arrayBuffer());
+  }
+
   function compact() {
-    result = result.replaceAll(" ", "");
+    resultString = resultString.replaceAll(" ", "");
   }
 
   function chunk() {
-    const chunks = chunked(result, 5);
-    result = chunks.join(" ");
+    if (resultString.includes(" ")) return;
+    const chunks = chunked(resultString, 5);
+    resultString = chunks.join(" ");
   }
 
   function ensureInput() {
@@ -106,15 +125,29 @@
     alertMessage = "";
   }
 
+  function save() {
+    let name =
+      action == Action.ENCRYPT
+        ? `encrypted-${fileName}`
+        : fileName.startsWith("encrypted-")
+        ? fileName.replace("encrypted-", "")
+        : `decrypted-${fileName}`;
+    saveBinary(result, name, fileType);
+  }
+
+  $: fileLabel = fileName ? `File: ${fileName}` : "No file chosen";
 </script>
 
 <div class="grow grid grid-rows-[1fr_auto] gap-4 h-full overflow-hidden">
   <div class="grid grid-cols-[1fr_1fr_1fr] gap-6 overflow-hidden">
-    <div class="h-full">
-      <label class="input-label box-border grid grid-rows-[auto_1fr] h-full">
-        <h4>Input</h4>
-        <textarea bind:value={source} class="resize-none" />
-      </label>
+    <div class="grid grid-rows-[1fr_auto] gap-4">
+      <FileDropzone
+        bind:files
+        height="h-full"
+        notes="File should be a plaintext."
+        on:change={onChange}
+      />
+      <h4>{fileLabel}</h4>
     </div>
     <div class="h-full">
       <h4>Setting EnigmaCipher</h4>
@@ -153,12 +186,14 @@
       </label>
     </div>
     <div
-      class="input-label h-full box-border grid grid-rows-[auto_1fr_auto] overflow-hidden">
+      class="input-label h-full box-border grid grid-rows-[auto_1fr_auto] overflow-hidden"
+    >
       <h4>Result</h4>
       <div
-        class="bg-surface-700 rounded-md border-surface-500 border box-border p-2 overflow-y-scroll">
+        class="bg-surface-700 rounded-md border-surface-500 border box-border p-2 overflow-y-scroll"
+      >
         <p class="break-all">
-          {result}
+          {resultString}
         </p>
       </div>
       {#if alertMessage}
@@ -207,15 +242,13 @@
       </div>
     </div>
     <div>
-      <button
-        class="btn btn-sm variant-filled-primary font-label font-semibold"
-        on:click={() => {
-          saveText(result, "encrypted.txt");
-        }}
-      >
-        Download
-      </button>
-    </div>
+        <button
+          class="btn btn-sm variant-filled-primary font-label font-semibold"
+          on:click={save}
+        >
+          Download
+        </button>
+      </div>
   </div>
 </div>
 
