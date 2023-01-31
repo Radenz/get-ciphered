@@ -40,7 +40,7 @@
       plugboard,
       reflector
     );
-
+    action == Action.ENCRYPT
     result = cipher.encryptBytes(source);
     resultString = String.fromCharCode(...result);
     compact();
@@ -59,7 +59,7 @@
       plugboard,
       reflector
     );
-
+    action == Action.DECRYPT
     result = cipher.decryptBytes(source);
     resultString = String.fromCharCode(...result);
     compact();

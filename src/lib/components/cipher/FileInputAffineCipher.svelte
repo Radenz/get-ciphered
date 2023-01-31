@@ -26,6 +26,7 @@
     if (!ensureKey()) return;
     action = Action.ENCRYPT;
     cipher = new AffineCipher(multiplier, offset);
+    action == Action.ENCRYPT
     result = cipher.encryptBytes(source);
     resultString = String.fromCharCode(...result);
     checkBinaryChar();

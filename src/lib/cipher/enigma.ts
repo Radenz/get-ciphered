@@ -125,7 +125,7 @@ class EnigmaCipher {
 		return this.encrypt(source);
 	}
 
-	decryptBytes(source: Uint8Array):Uint8Array {
+	decryptBytes(source: Uint8Array): Uint8Array {
 		return this.encryptBytes(source);
 	}
 
