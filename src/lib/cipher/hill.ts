@@ -40,7 +40,6 @@ class HillCipher {
 
 		for (const chunk of chunks) {
 			const chunkMatrix = toMatrixBytes(chunk, this.key.rowSize);
-			console.log(chunkMatrix);
 			const encryptedMatrix = this.key.multiply(chunkMatrix);
 			encryptedMatrix.mod(26);
 			for (let i = 0; i < this.key.rowSize; i++) {
@@ -79,7 +78,6 @@ class HillCipher {
 				)
 			);
 		}
-		console.log(chunks);
 		const decryptedChunks = [];
 
 		for (const chunk of chunks) {
@@ -90,7 +88,6 @@ class HillCipher {
 				decryptedChunks.push(alphaUpperCaseOf(chunkMatrix.get(i, 0)));
 			}
 		}
-		console.log(decryptedChunks);
 
 		return new Uint8Array(decryptedChunks);
 	}
