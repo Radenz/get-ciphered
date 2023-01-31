@@ -2,7 +2,7 @@
   import { FileDropzone } from "@skeletonlabs/skeleton";
   import { chunked } from "../../cipher/utils/char";
   import { EnigmaCipher } from "../../cipher/enigma";
-  import { Action, saveBinary } from "../../utils/save";
+  import { Action, saveText } from "../../utils/save";
 
 
   let alertMessage: string = "";
@@ -132,7 +132,7 @@
         : fileName.startsWith("encrypted-")
         ? fileName.replace("encrypted-", "")
         : `decrypted-${fileName}`;
-    saveBinary(result, name, fileType);
+    saveText(resultString, name);
   }
 
   $: fileLabel = fileName ? `File: ${fileName}` : "No file chosen";

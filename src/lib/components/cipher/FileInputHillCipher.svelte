@@ -2,7 +2,7 @@
   import { FileDropzone } from "@skeletonlabs/skeleton";
   import { chunked } from "../../cipher/utils/char";
   import { HillCipher } from "../../cipher/hill";
-  import { Action, saveBinary } from "../../utils/save";
+  import { Action, saveBinary, saveText } from "../../utils/save";
   import { ModulusMatrix } from "../../cipher/utils/math";
   
   export let cipher: HillCipher;
@@ -63,6 +63,7 @@
     if (resultString.includes(" ")) return;
     const chunks = chunked(resultString, 5);
     resultString = chunks.join(" ");
+
   }
 
   async function onChange() {
@@ -79,7 +80,7 @@
         : fileName.startsWith("encrypted-")
         ? fileName.replace("encrypted-", "")
         : `decrypted-${fileName}`;
-    saveBinary(result, name, fileType);
+    saveText(resultString, name);
   }
 
   function ensureInput(){

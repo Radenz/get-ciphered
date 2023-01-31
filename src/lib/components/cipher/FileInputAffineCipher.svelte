@@ -2,7 +2,7 @@
   import { FileDropzone } from "@skeletonlabs/skeleton";
   import { chunked } from "../../cipher/utils/char";
   import { AffineCipher } from "../../cipher/affine";
-  import { Action, saveBinary } from "../../utils/save";
+  import { Action, saveBinary, saveText } from "../../utils/save";
   import { gcd } from "../../cipher/utils/math";
 
   export let cipher: AffineCipher;
@@ -65,7 +65,7 @@
         : fileName.startsWith("encrypted-")
         ? fileName.replace("encrypted-", "")
         : `decrypted-${fileName}`;
-    saveBinary(result, name, fileType);
+    saveText(resultString, name);
   }
 
   function ensureKey() {
