@@ -34,6 +34,7 @@
     }
   }
   function encrypt() {
+    if (!ensureInput()) return;
     if (!ensureKey()) return;
     action = Action.ENCRYPT;
     createMatrixKey();
@@ -41,11 +42,12 @@
     result = cipher.encryptBytes(source);
     resultString = String.fromCharCode(...result);
     checkBinaryChar();
-  }
+  } 
 
   function decrypt() {
+    if (!ensureInput()) return;
     if (!ensureKey()) return;
-    action = Action.ENCRYPT;
+    action = Action.DECRYPT;
     createMatrixKey();
     cipher = new HillCipher(keymatrix);
     result = cipher.decryptBytes(source);
@@ -80,6 +82,15 @@
     saveBinary(result, name, fileType);
   }
 
+  function ensureInput(){
+    clear();
+    if (!source){
+      error("Input is empty!");
+      return false;
+    }
+    return true
+  }
+
   function ensureKey() {
     clear();
     if (!key) {
@@ -87,6 +98,10 @@
       return false;
     }
 
+    if(/[^0-9\s]/.test(key.toString())){
+      error("Key Matrix can only contain number!");
+      return false;
+    }
 
     return true;
   }

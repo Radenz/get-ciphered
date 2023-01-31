@@ -15,7 +15,6 @@ class EnigmaCipher {
 	private tick2: number;
 	private plugboard: string;
 
-	// constructor(){}
 	constructor(
 		private readonly rotor1: string,
 		private readonly rotor2: string,

@@ -6,6 +6,9 @@
 
   export let cipher: HillCipher;
 
+  let alertMessage: string = "";
+  let alertType = "warning";
+
   let source: string;
   let result: string = "";
   let key: string;
@@ -24,13 +27,16 @@
     }
   }
   function encrypt() {
+    if (!ensureInput()) return;
+    if (!ensureKey()) return;
     createMatrixKey();
-    console.log(keymatrix);
     cipher = new HillCipher(keymatrix);
     result = cipher.encrypt(source);
   }
 
   function decrypt() {
+    if (!ensureInput()) return;
+    if (!ensureKey()) return;
     createMatrixKey();
     cipher = new HillCipher(keymatrix);
     result = cipher.decrypt(source);
@@ -45,6 +51,43 @@
     const chunks = chunked(result, 5);
     result = chunks.join(" ");
   }
+
+  function ensureKey(){
+    clear();
+    if (!key) {
+      error("Key cannot be empty!");
+      return false;
+    }
+
+    if(/[^0-9\s]/.test(key.toString())){
+      error("Key Matrix can only contain number!");
+      return false;
+    }
+
+    return true;
+  }
+  
+  function ensureInput(){
+    clear();
+    if (!source){
+      error("Input is empty!");
+      return false;
+    }
+    return true
+  }
+  function warn(message: string) {
+    alertMessage = message;
+    alertType = "warning";
+  }
+
+  function error(message: string) {
+    alertMessage = message;
+    alertType = "error";
+  }
+
+  function clear() {
+    alertMessage = "";
+  }
 </script>
 
 <div class="grow grid grid-rows-[1fr_auto] gap-4 h-full overflow-hidden">
@@ -56,7 +99,7 @@
       </label>
     </div>
     <div
-      class="input-label h-full box-border grid grid-rows-[auto_1fr] overflow-hidden"
+      class="input-label h-full box-border grid grid-rows-[auto_1fr_auto] overflow-hidden"
     >
       <h4>Result</h4>
       <div
@@ -66,6 +109,15 @@
           {result}
         </p>
       </div>
+      {#if alertMessage}
+        <div>
+          {#if alertType == "warning"}
+            <div class="alert variant-ghost-warning">{@html alertMessage}</div>
+          {:else if alertType == "error"}
+            <div class="alert variant-ghost-error">{@html alertMessage}</div>
+          {/if}
+        </div>
+      {/if}
     </div>
   </div>
   <div class="grid grid-cols-[1fr_1fr] gap-6">
