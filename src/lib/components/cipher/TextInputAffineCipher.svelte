@@ -26,7 +26,7 @@
     if (!ensureKey()) return;
     cipher = new AffineCipher(+multiplier, +offset);
     if (!cipher.canDecrypt()) {
-      error("Cannot use such multiplier to decrypt the input!");
+      error("Cannot decrypt the input. The multiplier is invertible.");
       return;
     }
     result = cipher.decrypt(source);

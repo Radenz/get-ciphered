@@ -18,15 +18,19 @@
   let fileName: string;
   let fileType: string;
   let action: Action;
-  let multiplier: number;
-  let offset: number;
+  let multiplier: string;
+  let offset: string;
 
   function encrypt() {
     if (!ensureInput()) return;
     if (!ensureKey()) return;
     action = Action.ENCRYPT;
-    cipher = new AffineCipher(multiplier, offset);
-    action == Action.ENCRYPT
+    cipher = new AffineCipher(+multiplier, +offset);
+    if (!cipher.canDecrypt()) {
+      error("Cannot decrypt the input. The multiplier is invertible.");
+      return;
+    }
+    action == Action.ENCRYPT;
     result = cipher.encryptBytes(source);
     resultString = String.fromCharCode(...result);
     checkBinaryChar();
@@ -36,7 +40,7 @@
     if (!ensureInput()) return;
     if (!ensureKey()) return;
     action = Action.DECRYPT;
-    cipher = new AffineCipher(multiplier, offset);
+    cipher = new AffineCipher(+multiplier, +offset);
     result = cipher.decryptBytes(source);
     resultString = String.fromCharCode(...result);
     checkBinaryChar();
@@ -72,33 +76,35 @@
   function ensureKey() {
     clear();
     if (!multiplier) {
-      error("multiplier cannot be empty!");
+      error("Multiplier cannot be empty!");
       return false;
-    }
-    if (!offset) {
-      error("offset cannot be empty!");
-      return false;
-    }
-    if ( /[^0-9]/.test(offset.toString()) || /[^0-9]/.test(multiplier.toString())) {
-        error("Multiplier or Offset can only contain number!");
-        return false;
     }
 
-    if (gcd(26, multiplier) != 1){
-      error("Can't use this multiplier number!");
+    if (!/^[0-9]*$/.test(multiplier)) {
+      error("Multiplier must be a valid number!");
+      return false;
+    }
+
+    if (!offset) {
+      error("Offset cannot be empty!");
+      return false;
+    }
+
+    if (!/^[0-9]*$/.test(offset)) {
+      error("Offset must be a valid number!");
       return false;
     }
 
     return true;
   }
 
-  function ensureInput(){
+  function ensureInput() {
     clear();
-    if (!source){
+    if (!source) {
       error("Input is empty!");
       return false;
     }
-    return true
+    return true;
   }
 
   function checkBinaryChar() {
@@ -109,7 +115,6 @@
     }
   }
 
-  
   function warn(message: string) {
     alertMessage = message;
     alertType = "warning";
@@ -164,7 +169,7 @@
     <div class="flex items-center justify-between gap-6">
       <label class="input-label box-border flex items-center gap-4 grow">
         <h4 class="">Multiplier</h4>
-        <input type="text" bind:value={multiplier} class="h-8 text-input" />  
+        <input type="text" bind:value={multiplier} class="h-8 text-input" />
       </label>
       <label class="input-label box-border flex items-center gap-4 grow">
         <h4 class="mt-0">Offset</h4>
