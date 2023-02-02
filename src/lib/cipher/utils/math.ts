@@ -45,6 +45,16 @@ class ModulusMatrix {
     }
   }
 
+  static fromSquare(matrix: number[][]): ModulusMatrix {
+    const modulusMatrix = new ModulusMatrix(matrix.length, matrix.length);
+    for (let i = 0; i < matrix.length; i++) {
+      for (let j = 0; j < matrix.length; j++) {
+        modulusMatrix.set(i, j, matrix[i][j]);
+      }
+    }
+    return modulusMatrix;
+  }
+
   toString(): string {
     let codeArray = this.values.flat().map((char) => alphaUpperCaseOf(char));
     return String.fromCharCode(...codeArray);
