@@ -45,11 +45,11 @@ class ModulusMatrix {
     }
   }
 
-  static fromSquare(matrix: number[][]): ModulusMatrix {
+  static fromSquare(matrix: number[][], modulus: number): ModulusMatrix {
     const modulusMatrix = new ModulusMatrix(matrix.length, matrix.length);
     for (let i = 0; i < matrix.length; i++) {
       for (let j = 0; j < matrix.length; j++) {
-        modulusMatrix.set(i, j, matrix[i][j]);
+        modulusMatrix.set(i, j, mod(matrix[i][j], modulus));
       }
     }
     return modulusMatrix;

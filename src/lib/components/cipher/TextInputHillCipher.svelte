@@ -12,29 +12,15 @@
 
   let source: string;
   let result: string = "";
-  let key: string;
   let keyMatrix: ModulusMatrix;
   let matrix: number[][];
 
   let size: number = 2;
 
-  function createMatrixKey() {
-    const arr = key.split(" ");
-    const size = Math.sqrt(arr.length);
-    let idx = 0;
-    keyMatrix = new ModulusMatrix(size, size);
-    for (let i = 0; i < size; i++) {
-      for (let j = 0; j < size; j++) {
-        keyMatrix.set(i, j, Number(arr[idx]));
-        idx++;
-      }
-    }
-  }
   function encrypt() {
     if (!ensureInput()) return;
     if (!ensureKey()) return;
-    // createMatrixKey();
-    keyMatrix = ModulusMatrix.fromSquare(matrix);
+    keyMatrix = ModulusMatrix.fromSquare(matrix, 26);
     cipher = new HillCipher(keyMatrix);
     result = cipher.encrypt(source);
   }
@@ -42,9 +28,12 @@
   function decrypt() {
     if (!ensureInput()) return;
     if (!ensureKey()) return;
-    keyMatrix = ModulusMatrix.fromSquare(matrix);
-    // createMatrixKey();
+    keyMatrix = ModulusMatrix.fromSquare(matrix, 26);
     cipher = new HillCipher(keyMatrix);
+    if (!cipher.canDecrypt()) {
+      error("Cannot decrypt the input. The key matrix is invertible.");
+      return;
+    }
     result = cipher.decrypt(source);
   }
 
@@ -60,16 +49,6 @@
 
   function ensureKey() {
     clear();
-    // if (!key) {
-    //   error("Key cannot be empty!");
-    //   return false;
-    // }
-
-    // if (/[^0-9\s]/.test(key.toString())) {
-    //   error("Key Matrix can only contain number!");
-    //   return false;
-    // }
-
     return true;
   }
 

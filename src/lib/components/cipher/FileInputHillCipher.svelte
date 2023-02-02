@@ -4,7 +4,8 @@
   import { HillCipher } from "../../cipher/hill";
   import { Action, saveBinary, saveText } from "../../utils/save";
   import { ModulusMatrix } from "../../cipher/utils/math";
-  
+  import Matrix from "../Matrix.svelte";
+
   export let cipher: HillCipher;
   export let forBinary: boolean = false;
 
@@ -15,41 +16,31 @@
   let result: Uint8Array = new Uint8Array([]);
   let resultString: string = "";
   let key: string;
-  let keymatrix: ModulusMatrix;
+  let keyMatrix: ModulusMatrix;
+  let matrix: number[][];
   let files: FileList;
   let fileName: string;
   let fileType: string;
   let action: Action;
+  let size: number = 2;
 
-  function createMatrixKey() {
-    const arr = key.split(" ");
-    const size = Math.sqrt(arr.length);
-    let idx = 0;
-    keymatrix = new ModulusMatrix(size, size);
-    for (let i = 0; i < size; i++) {
-      for (let j = 0; j < size; j++) {
-        keymatrix.set(i, j, Number(arr[idx]));
-        idx++;
-      }
-    }
-  }
   function encrypt() {
     if (!ensureInput()) return;
     if (!ensureKey()) return;
     action = Action.ENCRYPT;
-    createMatrixKey();
-    cipher = new HillCipher(keymatrix);
+    keyMatrix = ModulusMatrix.fromSquare(matrix, 256);
+    cipher = new HillCipher(keyMatrix);
     result = cipher.encryptBytes(source);
     resultString = String.fromCharCode(...result);
     checkBinaryChar();
-  } 
+  }
 
   function decrypt() {
     if (!ensureInput()) return;
     if (!ensureKey()) return;
     action = Action.DECRYPT;
-    createMatrixKey();
-    cipher = new HillCipher(keymatrix);
+    keyMatrix = ModulusMatrix.fromSquare(matrix, 256);
+    cipher = new HillCipher(keyMatrix);
     result = cipher.decryptBytes(source);
     resultString = String.fromCharCode(...result);
     checkBinaryChar();
@@ -63,7 +54,6 @@
     if (resultString.includes(" ")) return;
     const chunks = chunked(resultString, 5);
     resultString = chunks.join(" ");
-
   }
 
   async function onChange() {
@@ -83,13 +73,13 @@
     saveText(resultString, name);
   }
 
-  function ensureInput(){
+  function ensureInput() {
     clear();
-    if (!source){
+    if (!source) {
       error("Input is empty!");
       return false;
     }
-    return true
+    return true;
   }
 
   function ensureKey() {
@@ -99,7 +89,7 @@
       return false;
     }
 
-    if(/[^0-9\s]/.test(key.toString())){
+    if (/[^0-9\s]/.test(key.toString())) {
       error("Key Matrix can only contain number!");
       return false;
     }
@@ -129,11 +119,19 @@
     alertMessage = "";
   }
 
+  function incrementSize() {
+    size++;
+  }
+
+  function decrementSize() {
+    if (size > 2) size--;
+  }
+
   $: fileLabel = fileName ? `File: ${fileName}` : "No file chosen";
 </script>
 
 <div class="grow grid grid-rows-[1fr_auto] gap-4 h-full overflow-hidden">
-  <div class="grid grid-cols-[1fr_1fr] gap-6 overflow-hidden">
+  <div class="grid grid-cols-[3fr_2fr_3fr] gap-6 overflow-hidden">
     <div class="grid grid-rows-[1fr_auto] gap-4">
       <FileDropzone
         bind:files
@@ -143,6 +141,25 @@
       />
       <h4>{fileLabel}</h4>
     </div>
+    <div class="h-full">
+      <h4 class="mb-2">Key Matrix</h4>
+      <Matrix {size} bind:matrix />
+      <div class="mt-4 flex items-center gap-4">
+        <h4>Size: {size}</h4>
+        <button
+          class="btn btn-sm variant-filled-primary font-label font-semibold"
+          on:click={incrementSize}
+        >
+          +
+        </button>
+        <button
+          class="btn btn-sm variant-filled-primary font-label font-semibold"
+          on:click={decrementSize}
+        >
+          -
+        </button>
+      </div>
+    </div>
     <div
       class="input-label h-full box-border grid grid-rows-[auto_1fr_auto] overflow-hidden"
     >
@@ -151,7 +168,7 @@
         class="bg-surface-700 rounded-md border-surface-500 border box-border p-2 overflow-y-scroll"
       >
         <p class="break-all">
-          {resultString}
+          {result}
         </p>
       </div>
       {#if alertMessage}
@@ -165,12 +182,8 @@
       {/if}
     </div>
   </div>
-  <div class="grid grid-cols-[1fr_1fr] gap-6">
+  <div class="grid grid-cols-[3fr_2fr_3fr] gap-6">
     <div class="flex items-center justify-between gap-6">
-      <label class="input-label box-border flex items-center gap-4 grow">
-        <h4>Key</h4>
-        <input type="text" bind:value={key} class="h-8 text-input" />
-      </label>
       <div class="flex gap-4">
         <button
           class="btn btn-sm variant-filled-primary font-label font-semibold"
@@ -186,6 +199,7 @@
         </button>
       </div>
     </div>
+    <div />
     <div class="flex justify-between items-center">
       <div class="flex gap-4 items-center">
         <h4>Format:</h4>
@@ -213,9 +227,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  .text-input {
-    margin-top: 0 !important;
-  }
-</style>
