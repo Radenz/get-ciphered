@@ -1,80 +1,92 @@
-import { alphaCodeOf, alphaUpperCaseOf, alphaLowerCaseOf , isAlpha } from "./utils/char";
-import { inverseMod, mod } from "./utils/math";
+import {
+  alphaCodeOf,
+  alphaUpperCaseOf,
+  alphaLowerCaseOf,
+  isAlpha,
+} from "./utils/char";
+import { gcd, inverseMod, mod } from "./utils/math";
 
 class AffineCipher {
-	private inverseModulus: number;
+  private inverseModulus: number;
   private inverseModulusBytes: number;
-	constructor(
-		private readonly multiplier: number,
-		private readonly offset: number
-	) {
-		this.inverseModulus = inverseMod(multiplier, 1, 26);
-	}
+  constructor(
+    private readonly multiplier: number,
+    private readonly offset: number
+  ) {
+    this.inverseModulus =
+      gcd(26, multiplier) == 1 || multiplier == 0
+        ? inverseMod(multiplier, 1, 26)
+        : 0;
+  }
 
-	encryptBytes(source: Uint8Array): Uint8Array {
-		const sanitizedSource = source.filter(isAlpha);
-		const encrypted = [];
+  encryptBytes(source: Uint8Array): Uint8Array {
+    const sanitizedSource = source.filter(isAlpha);
+    const encrypted = [];
 
-		for (let i = 0; i < sanitizedSource.length; i++) {
-		const char = sanitizedSource[i];
-		const newAlphaCode = mod(
-			alphaCodeOf(char) * this.multiplier + Number(this.offset),
-			26
-		);
-		encrypted.push(alphaUpperCaseOf(newAlphaCode));
-		}
+    for (let i = 0; i < sanitizedSource.length; i++) {
+      const char = sanitizedSource[i];
+      const newAlphaCode = mod(
+        alphaCodeOf(char) * this.multiplier + Number(this.offset),
+        26
+      );
+      encrypted.push(alphaUpperCaseOf(newAlphaCode));
+    }
 
-		return new Uint8Array(encrypted);
-	}
+    return new Uint8Array(encrypted);
+  }
 
-	encrypt(source: string): string {
-		const encrypted = [];
-    
-		for (let i = 0; i < source.length; i++) {
-			const char = source.charCodeAt(i);
-			if (!isAlpha(char)){
-				continue;
-			}
-			const newAlphaCode = mod(
-				alphaCodeOf(char) * this.multiplier + Number(this.offset),
-				26
-			);
-			encrypted.push(alphaUpperCaseOf(newAlphaCode));
-		}
+  encrypt(source: string): string {
+    const encrypted = [];
 
-		return String.fromCharCode(...encrypted);
-	}
+    for (let i = 0; i < source.length; i++) {
+      const char = source.charCodeAt(i);
+      if (!isAlpha(char)) {
+        continue;
+      }
+      const newAlphaCode = mod(
+        alphaCodeOf(char) * this.multiplier + Number(this.offset),
+        26
+      );
+      encrypted.push(alphaUpperCaseOf(newAlphaCode));
+    }
 
-	decrypt(encrypted: string): string {
-		const source = [];
-		for (let i = 0; i < encrypted.length; i++) {
-			const char = encrypted.charCodeAt(i);
-			if (!isAlpha(char)) {
-				continue;
-			}
-			const newAlphaCode = mod(
-				(alphaCodeOf(char) - this.offset) * this.inverseModulus,
-				26
-			);
-			source.push(alphaUpperCaseOf(newAlphaCode));
-		}
+    return String.fromCharCode(...encrypted);
+  }
 
-		return String.fromCharCode(...source);
-	}
+  decrypt(encrypted: string): string {
+    const source = [];
+    for (let i = 0; i < encrypted.length; i++) {
+      const char = encrypted.charCodeAt(i);
+      if (!isAlpha(char)) {
+        continue;
+      }
+      const newAlphaCode = mod(
+        (alphaCodeOf(char) - this.offset) * this.inverseModulus,
+        26
+      );
+      source.push(alphaUpperCaseOf(newAlphaCode));
+    }
 
-	decryptBytes(source: Uint8Array): Uint8Array {
-		const decrypted = [];
-		const sanitizedSource = source.filter(isAlpha);
-		for (let i = 0; i < sanitizedSource.length; i++) {
-			const char = sanitizedSource[i];
-			const newAlphaCode = mod(
-				(alphaCodeOf(char) - this.offset) * this.inverseModulus,
-				26
-			);
-			decrypted.push(alphaUpperCaseOf(newAlphaCode));
-		}
+    return String.fromCharCode(...source);
+  }
 
-		return new Uint8Array(decrypted);
+  decryptBytes(source: Uint8Array): Uint8Array {
+    const decrypted = [];
+    const sanitizedSource = source.filter(isAlpha);
+    for (let i = 0; i < sanitizedSource.length; i++) {
+      const char = sanitizedSource[i];
+      const newAlphaCode = mod(
+        (alphaCodeOf(char) - this.offset) * this.inverseModulus,
+        26
+      );
+      decrypted.push(alphaUpperCaseOf(newAlphaCode));
+    }
+
+    return new Uint8Array(decrypted);
+  }
+
+  canDecrypt(): boolean {
+    return this.inverseModulus !== 0;
   }
 }
 

@@ -9,14 +9,14 @@
 
   let source: string;
   let result: string = "";
-  let multiplier: number;
-  let offset: number;
+  let multiplier: string;
+  let offset: string;
   let cipher: AffineCipher;
 
   function encrypt() {
     if (!ensureInput()) return;
     if (!ensureKey()) return;
-    cipher = new AffineCipher(multiplier, offset);
+    cipher = new AffineCipher(+multiplier, +offset);
     result = cipher.encrypt(source);
     compact();
   }
@@ -24,7 +24,11 @@
   function decrypt() {
     if (!ensureInput()) return;
     if (!ensureKey()) return;
-    cipher = new AffineCipher(multiplier, offset);
+    cipher = new AffineCipher(+multiplier, +offset);
+    if (!cipher.canDecrypt()) {
+      error("Cannot use such multiplier to decrypt the input!");
+      return;
+    }
     result = cipher.decrypt(source);
     compact();
   }
@@ -39,39 +43,40 @@
     result = chunks.join(" ");
   }
 
-  function ensureKey(){
+  function ensureKey() {
     clear();
-      if (!multiplier ) {
-        error("Multiplier cannot be empty!");
-        return false;
-      }
-      if (!offset) {
-        error("Offset cannot be empty!");
-        return false;
-      }
+    if (!multiplier) {
+      error("Multiplier cannot be empty!");
+      return false;
+    }
 
-      if ( /[^0-9]/.test(offset.toString()) || /[^0-9]/.test(multiplier.toString())) {
-        error("Multiplier or Offset can only contain number!");
-        return false;
-      }
+    if (!/^[0-9]*$/.test(multiplier)) {
+      error("Multiplier must be a valid number!");
+      return false;
+    }
 
-      if (gcd(26, multiplier) != 1){
-        error("Can't use this multiplier number!");
-        return false;
-      }
+    if (!offset) {
+      error("Offset cannot be empty!");
+      return false;
+    }
 
-      return true;   
-    
+    if (!/^[0-9]*$/.test(offset)) {
+      error("Offset must be a valid number!");
+      return false;
+    }
+
+    return true;
   }
 
-  function ensureInput(){
+  function ensureInput() {
     clear();
-    if (!source){
+    if (!source) {
       error("Input is empty!");
       return false;
     }
-    return true
+    return true;
   }
+
   function warn(message: string) {
     alertMessage = message;
     alertType = "warning";
@@ -85,7 +90,6 @@
   function clear() {
     alertMessage = "";
   }
-
 </script>
 
 <div class="grow grid grid-rows-[1fr_auto] gap-4 h-full overflow-hidden">
