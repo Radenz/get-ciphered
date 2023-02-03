@@ -28,7 +28,8 @@ class EnigmaCipher {
 		this.rotor = [rotor1, rotor2, rotor3];
 		this.position = [position1, position2, position3];
 		this.plugboard = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		var source = pl.replace(" ", "");
+		var source = pl.replace(/\s/g, "");
+		console.log(source);
 		for (let i = 0; i < source.length; i += 2) {
 			var a = this.plugboard
 				.replace(source[i], "0")
