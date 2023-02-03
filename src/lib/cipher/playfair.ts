@@ -154,8 +154,8 @@ function toBigrams(text: string): Bigram[] {
   const bigrams = [];
   let i = 0;
   while (i < text.length) {
-    const first = text.charCodeAt(i);
-    let second = i == text.length - 1 ? X : text.charCodeAt(i + 1);
+    const first = toUpperCase(text.charCodeAt(i));
+    let second = i == text.length - 1 ? X : toUpperCase(text.charCodeAt(i + 1));
 
     if (first == second && first != X) {
       second = X;
