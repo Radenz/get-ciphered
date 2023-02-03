@@ -84,16 +84,6 @@
 
   function ensureKey() {
     clear();
-    if (!key) {
-      error("Key cannot be empty!");
-      return false;
-    }
-
-    if (/[^0-9\s]/.test(key.toString())) {
-      error("Key Matrix can only contain number!");
-      return false;
-    }
-
     return true;
   }
 
@@ -168,7 +158,7 @@
         class="bg-surface-700 rounded-md border-surface-500 border box-border p-2 overflow-y-scroll"
       >
         <p class="break-all">
-          {result}
+          {resultString}
         </p>
       </div>
       {#if alertMessage}
