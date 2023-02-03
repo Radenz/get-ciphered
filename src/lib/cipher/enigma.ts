@@ -50,7 +50,7 @@ class EnigmaCipher {
 			// left to right rotor encrpt
 			for (let j = 0; j < 3; j++) {
 				code = this.rotor[j].charCodeAt(
-					(alphaCodeOf(code) + this.position[j]) % 26
+					(alphaCodeOf(code) + Number(this.position[j])) % 26
 				);
 			}
 
@@ -65,7 +65,7 @@ class EnigmaCipher {
 
 				code =
 					(this.rotor[j].indexOf(String.fromCharCode(code)) -
-						this.position[j] +
+						Number(this.position[j]) +
 						26) %
 					26;
 			}
@@ -92,7 +92,7 @@ class EnigmaCipher {
 			// left to right rotor encrpt
 			for (let j = 0; j < 3; j++) {
 				code = this.rotor[j].charCodeAt(
-					(alphaCodeOf(code) + this.position[j]) % 26
+					(alphaCodeOf(code) + Number(this.position[j])) % 26
 				);
 			}
 
@@ -107,7 +107,7 @@ class EnigmaCipher {
 
 				code =
 					(this.rotor[j].indexOf(String.fromCharCode(code)) -
-						this.position[j] +
+						Number(this.position[j]) +
 						26) %
 					26;
 			}
